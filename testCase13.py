@@ -20,33 +20,36 @@ driver = webdriver.Chrome(
 )
 driver.get("https://automationexercise.com/")
 driver.find_element(By.XPATH, '//*[@id="header"]/div/div/div/div[2]/div/ul/li[2]').click()
-
 time.sleep(2)
 try:
     element_present = EC.presence_of_element_located((By.XPATH, '/html/body/section[2]/div/div/div[2]/div/h2'))
     WebDriverWait(driver, 5).until(element_present)
     print("All Products Page loaded Successfully!")
-    element_present = EC.presence_of_element_located((By.XPATH, '/html/body/section[2]/div/div/div[2]/div/div[2]/div/div[2]/ul/li/a'))
-    s = WebDriverWait(driver, 10).until(element_present)
+    time.sleep(2)
+    s = driver.find_element(By.XPATH, '/html/body/section[2]/div/div/div[2]/div/div[2]/div/div[2]/ul/li/a/i').is_displayed()
+    a = ActionChains(driver)
     if s:
-        a = ActionChains(driver)
-        m = driver.find_element(By.XPATH, '/html/body/section[2]/div/div/div[2]/div/div[2]/div/div[1]/div[1]')
-        a.move_to_element(m).perform()
-        print("Hoverd to first product")
-        driver.find_element(By.XPATH, '/html/body/section[2]/div/div/div[2]/div/div[2]/div/div[1]/div[2]/div/a').click()
-        print("Product added to cart successfully!")
-        pop_up_present = EC.presence_of_element_located((By.XPATH, '//*[@id="cartModal"]/div/div'))
-        if WebDriverWait(driver, 10).until(pop_up_present):
-            ele = driver.find_element(By.XPATH, '//*[@id="cartModal"]/div/div/div[2]/p[2]/a')
-            time.sleep(5)
-            a.move_to_element(ele).perform()
-            ele.click()
-            if driver.find_elements(By.XPATH, '//*[@id="cart_items"]/div/div[1]/ol/li[2]'):
-                print("Landed Successfully on cart page!")
+        driver.find_element(By.XPATH, '/html/body/section[2]/div/div/div[2]/div/div[2]/div/div[2]/ul/li/a/i').click()
+        print("Navigated to productDetails page")
+        driver.find_element(By.XPATH, '//*[@id="quantity"]').clear()
+        driver.find_element(By.XPATH, '//*[@id="quantity"]').send_keys(4)
+        print("Added 4 items")
+        driver.find_element(By.XPATH, '/html/body/section/div/div/div[2]/div[2]/div[2]/div/span/button').click()
+        print("Added 4 items to cart")
+        ele = driver.find_element(By.XPATH, '//*[@id="cartModal"]/div/div/div[2]/p[2]/a')
+        time.sleep(5)
+        a.move_to_element(ele).perform()
+        ele.click()
+        if driver.find_elements(By.XPATH, '//*[@id="cart_items"]/div/div[1]/ol/li[2]'):
+            print("Landed Successfully on cart page!")
+            s = driver.find_element(By.XPATH, '//*[@id="product-1"]/td[4]/button')
+            print(s.text, type(s.text))
+            if s.text == '4':
+                print("Quantity match in cart page")
             else:
-                print("Failed to loan cart page")
+                print("Quantity mis-match")
         else:
-            print("unable to switch to popup!")
+            print("Failed to loan cart page")
     else:
         print("first Product not found")
 except Exception as err:
